@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Debit Card Purchase
+Date: Thu, 20 Aug 2026 16:20:45 +0500
+
+Dear Customer,
+
+You spent Rs. 1,150.00 at ESPRESSO COFFEE on your Debit Card ending in 4102 on 20-Aug-2026 16:20:18 PKT.
+
+Available Balance: Rs. 124,020.00.
+
+Thank you for banking with HBL.

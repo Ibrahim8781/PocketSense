@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Debit Card Purchase
+Date: Fri, 28 Aug 2026 20:15:00 +0500
+
+Dear Customer,
+
+You spent Rs. 5,300.00 at AGHAS SUPERMARKET on your Debit Card ending in 4102 on 28-Aug-2026 20:14:35 PKT.
+
+Available Balance: Rs. 92,101.00.
+
+Thank you for banking with HBL.

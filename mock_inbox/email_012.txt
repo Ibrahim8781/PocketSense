@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Debit Card Purchase
+Date: Tue, 01 Sep 2026 08:50:00 +0500
+
+Dear Customer,
+
+You spent Rs. 4,500.00 at SHELL FUEL STATION on your Debit Card ending in 4102 on 01-Sep-2026 08:49:33 PKT.
+
+Available Balance: Rs. 75,601.00.
+
+Thank you for banking with HBL.

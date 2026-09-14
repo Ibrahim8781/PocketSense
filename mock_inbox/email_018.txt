@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Refund / Reversal Credited
+Date: Thu, 10 Sep 2026 11:20:00 +0500
+
+Dear Customer,
+
+A reversal / refund of Rs. 3,499.00 from DARAZ.PK has been credited to your account ending in 4102 on 10-Sep-2026 11:19:40 PKT.
+
+Available Balance: Rs. 40,580.00.
+
+Thank you for banking with HBL.

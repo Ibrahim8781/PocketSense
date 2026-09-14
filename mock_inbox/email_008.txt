@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Debit Card Purchase
+Date: Sat, 22 Aug 2026 19:40:00 +0500
+
+Dear Customer,
+
+You spent Rs. 8,120.00 at NAHEED SUPERMARKET on your Debit Card ending in 4102 on 22-Aug-2026 19:39:41 PKT.
+
+Available Balance: Rs. 100,900.00.
+
+Thank you for banking with HBL.

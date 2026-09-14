@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Bill Payment
+Date: Wed, 09 Sep 2026 14:05:22 +0500
+
+Dear Customer,
+
+You spent Rs. 14,850.00 at K-ELECTRIC on your Debit Card ending in 4102 on 09-Sep-2026 14:05:01 PKT.
+
+Available Balance: Rs. 37,081.00.
+
+Thank you for banking with HBL.

@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Online Card Purchase
+Date: Tue, 25 Aug 2026 15:10:30 +0500
+
+Dear Customer,
+
+You spent Rs. 3,499.00 at DARAZ.PK on your Debit Card ending in 4102 on 25-Aug-2026 15:10:11 PKT.
+
+Available Balance: Rs. 97,401.00.
+
+Thank you for banking with HBL.

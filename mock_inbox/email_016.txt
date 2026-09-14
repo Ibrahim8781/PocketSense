@@ -1,0 +1,13 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Funds Transfer
+Date: Tue, 08 Sep 2026 11:00:00 +0500
+
+Dear Customer,
+
+You sent Rs. 18,500.00 to A*** K*** (Acc ****4821) via Mobile Banking on 08-Sep-2026 10:59:22 PKT.
+
+Reference Number: FT26251093120
+Available Balance: Rs. 51,931.00.
+
+Thank you for banking with HBL.

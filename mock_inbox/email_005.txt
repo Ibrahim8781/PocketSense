@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Online Card Purchase
+Date: Tue, 18 Aug 2026 21:05:12 +0500
+
+Dear Customer,
+
+You spent Rs. 1,500.00 at NETFLIX on your Debit Card ending in 4102 on 18-Aug-2026 21:05:00 PKT.
+
+Available Balance: Rs. 125,170.00.
+
+Thank you for banking with HBL.

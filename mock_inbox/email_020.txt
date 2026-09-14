@@ -1,0 +1,13 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Notification: Card Transaction
+Date: Sun, 13 Sep 2026 16:45:00 +0500
+
+Dear Customer,
+
+You spent PKR 1,250.00 at SUBWAY on your Debit Card ending in 4102 on 13-Sep-2026 16:44:10 PKT.
+Transaction Details: Original Charge Rs 1250 (Settlement: Rs. 1,250 / PKR 1,250.00).
+
+Available Balance: Rs. 39,330.00.
+
+Thank you for banking with HBL.

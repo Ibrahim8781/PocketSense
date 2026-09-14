@@ -1,0 +1,12 @@
+From: alerts@hbl.com
+To: customer@example.com
+Subject: Transaction Alert: Debit Card Purchase
+Date: Thu, 13 Aug 2026 18:45:20 +0500
+
+Dear Customer,
+
+You spent Rs. 680.00 at CAREEM on your Debit Card ending in 4102 on 13-Aug-2026 18:45:02 PKT.
+
+Available Balance: Rs. 138,670.00.
+
+Thank you for banking with HBL.
