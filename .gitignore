@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 .agent/
 *.md
+!README.md
 memory/*.json
 memory/*.html
