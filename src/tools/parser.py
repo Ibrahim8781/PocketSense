@@ -90,6 +90,7 @@ def parse_email(text: str) -> Dict[str, Any]:
     )
     refund_match = re.search(refund_pattern, text, re.IGNORECASE)
 
+    is_refund = False
     if transfer_match:
         txn_type = "transfer"
         raw_amt = transfer_match.group(1)
@@ -100,6 +101,7 @@ def parse_email(text: str) -> Dict[str, Any]:
         target = card_match.group(2).strip().rstrip(".")
     elif refund_match:
         txn_type = "card_txn"
+        is_refund = True
         raw_amt = refund_match.group(1)
         target = refund_match.group(2).strip().rstrip(".")
     else:
@@ -123,6 +125,7 @@ def parse_email(text: str) -> Dict[str, Any]:
         "amount": amount,
         "merchant_or_recipient": target,
         "is_masked": is_masked,
+        "is_refund": is_refund,
         "date": date_val,
         "raw_text": text,
     }

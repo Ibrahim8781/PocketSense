@@ -101,6 +101,29 @@ class TestEmailParser(unittest.TestCase):
         self.assertEqual(unmasked_result["amount"], 2500.0)
         self.assertEqual(unmasked_result["merchant_or_recipient"], "John Doe")
         self.assertFalse(unmasked_result["is_masked"])
+        self.assertFalse(unmasked_result["is_refund"])
+
+    def test_refund_reversal_sets_is_refund_flag(self):
+        """Case 6: Refund/reversal email sets is_refund: True and normalizes merchant & amount."""
+        refund_email = (
+            "From: alerts@hbl.com\n"
+            "To: customer@example.com\n"
+            "Subject: Transaction Alert: Refund / Reversal Credited\n"
+            "Date: Thu, 10 Sep 2026 11:20:00 +0500\n\n"
+            "Dear Customer,\n\n"
+            "A reversal / refund of Rs. 3,499.00 from DARAZ.PK has been credited to your account "
+            "ending in 4102 on 10-Sep-2026 11:19:40 PKT.\n\n"
+            "Available Balance: Rs. 40,580.00.\n\n"
+            "Thank you for banking with HBL.\n"
+        )
+        result = parse_email(refund_email)
+
+        self.assertTrue(result["is_refund"])
+        self.assertEqual(result["type"], "card_txn")
+        self.assertEqual(result["amount"], 3499.0)
+        self.assertEqual(result["merchant_or_recipient"], "DARAZ.PK")
+        self.assertFalse(result["is_masked"])
+        self.assertIn("2026-09-10", result["date"])
 
 
 if __name__ == "__main__":

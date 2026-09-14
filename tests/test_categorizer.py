@@ -66,6 +66,37 @@ class TestMerchantCategorizer(unittest.TestCase):
             self.assertEqual(saved_cache.get("Foodpanda"), "Food & Dining")
             self.assertEqual(saved_cache.get("K-Electric"), "Utilities")
 
+    def test_call_llm_routes_through_strands_agent(self):
+        """Verify _call_llm calls Strands Agent and returns stripped response."""
+        from unittest.mock import MagicMock
+        from src.tools.categorizer import _call_llm
+
+        mock_agent = MagicMock()
+        mock_agent.messages = ["old_msg"]
+        mock_agent.return_value = "  Food & Dining  \n"
+
+        with patch("src.tools.categorizer._get_agent", return_value=mock_agent):
+            result = _call_llm("What category does Careem belong to?")
+            self.assertEqual(result, "Food & Dining")
+            self.assertEqual(mock_agent.messages, [])
+            mock_agent.assert_called_once_with("What category does Careem belong to?")
+
+    def test_call_llm_access_denied_fallback(self):
+        """Verify _call_llm catches AccessDenied / Marketplace error and returns 'Other'."""
+        from unittest.mock import MagicMock
+        from src.tools.categorizer import _call_llm
+
+        class AccessDeniedException(Exception):
+            pass
+
+        mock_agent = MagicMock(side_effect=AccessDeniedException("AWS Bedrock Marketplace subscription required"))
+
+        with patch("src.tools.categorizer._get_agent", return_value=mock_agent):
+            with self.assertLogs("src.tools.categorizer", level=logging.WARNING) as log_capture:
+                result = _call_llm("What category does Unknown belong to?")
+                self.assertEqual(result, "Other")
+                self.assertTrue(any("Bedrock Model Access Notice" in log for log in log_capture.output))
+
 
 if __name__ == "__main__":
     unittest.main()

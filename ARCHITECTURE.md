@@ -17,7 +17,11 @@ PocketSense is built on four fundamental architectural principles:
 
 ## 2. End-to-End Data Flow Architecture
 
-The diagram below illustrates the complete lifecycle of a bank notification through PocketSense:
+<p align="center">
+  <img src="assets/PocketSense-Architecture.png" alt="PocketSense Architecture Diagram" width="850"/>
+</p>
+
+The sequence and component architecture below illustrates the complete lifecycle of a bank notification through PocketSense:
 
 ```mermaid
 flowchart TD
@@ -35,6 +39,7 @@ flowchart TD
         subgraph CardBranch ["Card Transaction Pipeline"]
             Categorizer["src/tools/categorizer.py<br/>(categorize_merchant)"]
             Cache[("memory/merchant_categories.json<br/>(Local Cache)")]
+            StrandsAgent["Strands Agent<br/>(src/agent.py:create_agent)"]
             Bedrock["Amazon Bedrock<br/>(Claude Sonnet 4.6)"]
         end
 
@@ -70,8 +75,10 @@ flowchart TD
 
     Router -->|card_txn| Categorizer
     Categorizer <-->|1. Exact match check| Cache
-    Categorizer -->|2. Cache miss prompt| Bedrock
-    Bedrock -->|One-word category| Categorizer
+    Categorizer -->|2. Cache miss prompt| StrandsAgent
+    StrandsAgent -->|Bedrock converse call| Bedrock
+    Bedrock -->|Classification response| StrandsAgent
+    StrandsAgent -->|One-word category| Categorizer
     Categorizer -->|Write-through save| Cache
 
     Router -->|transfer| TransferHandler
@@ -101,15 +108,16 @@ flowchart TD
 
 ## 3. Model Provider: Amazon Bedrock
 
-PocketSense integrates with **Amazon Bedrock** as its core generative model provider:
+PocketSense integrates with **Amazon Bedrock** as its core generative intelligence provider, managed through the **Strands Agents SDK**:
 
+- **Strands Agent Integration**: All LLM interactions are orchestrated through the Strands `Agent` abstraction instantiated via `src/agent.py:create_agent()` using `BedrockModel` rather than low-level `boto3` client invocations. `src/tools/categorizer.py` routes semantic classification prompts directly through this agent.
 - **Model Identifier**: `us.anthropic.claude-sonnet-4-6` (Anthropic Claude Sonnet 4.6).
 - **Inference Profile**: Uses Bedrock's regional inference profile routing (`us.` prefix in `us-east-1`), ensuring low latency and on-demand access compliance.
-- **Credential Provider**: Resolves AWS credentials via `boto3`'s default credential chain (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` from `.env`).
+- **Credential Provider**: Resolves AWS credentials via standard environment and AWS credential chains (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` from `.env`).
 - **Inference Configuration**:
   - `temperature`: `0.0` (maximally deterministic classification).
-  - `maxTokens`: `50` (enforces concise, single-category responses).
-- **Graceful Fault Tolerance**: If Bedrock access is ungranted or verification is in progress, the categorizer catches the `ValidationException` or `AccessDeniedException`, prints an informative console diagnostic, and defaults to category `"Other"` without hanging or retrying in an infinite loop.
+  - `max_tokens`: `256` (enforces concise, deterministic responses while preventing loop truncation exceptions).
+- **Graceful Fault Tolerance**: If Bedrock access is ungranted or verification is in progress, the categorizer catches `ValidationException`, `AccessDeniedException`, or marketplace access restrictions, prints an informative console diagnostic, and defaults to category `"Other"` without hanging or retrying in an infinite loop.
 
 ---
 
@@ -123,7 +131,7 @@ PocketSense integrates with **Amazon Bedrock** as its core generative model prov
 ### `src/tools/categorizer.py` (`@tool categorize_merchant`)
 - Evaluates merchants against allowed categories: `Food & Dining`, `Utilities`, `Transport`, `Shopping`, `Entertainment`, `Health`, `Rent`, `Transfers`, `Other`.
 - Checks `memory/merchant_categories.json` first (case-insensitive).
-- On cache miss, queries Bedrock and updates cache file.
+- On cache miss, queries Bedrock via the Strands `Agent` (`src/agent.py:create_agent()`) and updates cache file.
 
 ### `src/tools/transfer_handler.py` (`@tool handle_transfer`)
 - Unmasked transfers are routed directly through `categorize_merchant`.

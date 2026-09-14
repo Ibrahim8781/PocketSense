@@ -4,9 +4,8 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
-import boto3
 from dotenv import load_dotenv
 from strands import tool
 
@@ -65,23 +64,31 @@ def _lookup_merchant(cache: Dict[str, str], merchant: str) -> Optional[str]:
     return None
 
 
+_agent_instance: Optional[Any] = None
+
+
+def _get_agent() -> Any:
+    """Get or create singleton Strands Agent instance for merchant categorization."""
+    global _agent_instance
+    if _agent_instance is None:
+        from src.agent import create_agent
+        _agent_instance = create_agent(temperature=0.0, max_tokens=256)
+    return _agent_instance
+
+
 def _call_llm(prompt: str) -> str:
-    """Call Bedrock LLM to classify merchant."""
+    """Call Bedrock LLM via Strands Agent to classify merchant."""
     load_dotenv()
     model_id = os.getenv("BEDROCK_MODEL_ID")
     if not model_id:
         raise ValueError("BEDROCK_MODEL_ID environment variable is not set.")
 
-    region = os.getenv("AWS_REGION", "us-east-1")
-    client = boto3.client("bedrock-runtime", region_name=region)
-
     try:
-        response = client.converse(
-            modelId=model_id,
-            messages=[{"role": "user", "content": [{"text": prompt}]}],
-            inferenceConfig={"temperature": 0.0, "maxTokens": 50},
-        )
-        return response["output"]["message"]["content"][0]["text"].strip()
+        agent = _get_agent()
+        if hasattr(agent, "messages") and isinstance(agent.messages, list):
+            agent.messages.clear()
+        response = agent(prompt)
+        return str(response).strip()
     except Exception as e:
         err_name = type(e).__name__
         err_msg = str(e)
@@ -92,10 +99,12 @@ def _call_llm(prompt: str) -> str:
             or "verification" in err_msg
             or "ValidationException" in err_name
         ):
-            print(f"\n[!] Bedrock Model Access Notice: Call to model '{model_id}' failed with {err_name}.")
-            print(f"    Details: {err_msg}")
-            print("    Model access is not fully granted yet in AWS Bedrock console or account verification is pending.")
-            print("    Using default category 'Other' without retrying.\n")
+            logger.warning(
+                "Bedrock Model Access Notice: Call to model '%s' failed with %s (%s). Using default category 'Other'.",
+                model_id,
+                err_name,
+                err_msg,
+            )
             return "Other"
         raise
 

@@ -1,7 +1,7 @@
 """PocketSense agent initialization using Strands Agents SDK and BedrockModel."""
 
 import os
-from typing import Optional
+from typing import Any, List, Optional
 
 from dotenv import load_dotenv
 from strands import Agent
@@ -14,22 +14,28 @@ from src.tools.parser import parse_email
 from src.tools.transfer_handler import handle_transfer
 
 
-def create_agent(model_id: Optional[str] = None, region_name: Optional[str] = None) -> Agent:
+def create_agent(
+    model_id: Optional[str] = None,
+    region_name: Optional[str] = None,
+    tools: Optional[List[Any]] = None,
+    include_tools: bool = False,
+    temperature: float = 0.0,
+    max_tokens: int = 256,
+) -> Agent:
     """
     Create and configure the PocketSense Strands Agent.
 
     Reads AWS_REGION and BEDROCK_MODEL_ID from environment variables.
     AWS credentials are read automatically from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY.
-    Registers all 5 tools:
-      - parse_email
-      - categorize_merchant
-      - handle_transfer
-      - detect_anomalies
-      - build_digest / send_digest
+    Registers BedrockModel with deterministic temperature and token limit.
 
     Args:
         model_id: Optional model override. Defaults to BEDROCK_MODEL_ID env var.
         region_name: Optional region override. Defaults to AWS_REGION env var.
+        tools: Optional explicit list of tools to attach.
+        include_tools: If True and tools is None, registers all 5 core tools.
+        temperature: Model inference temperature (default 0.0).
+        max_tokens: Max tokens for inference (default 256).
 
     Returns:
         Agent: Configured Strands Agent instance.
@@ -48,6 +54,8 @@ def create_agent(model_id: Optional[str] = None, region_name: Optional[str] = No
     bedrock_model = BedrockModel(
         model_id=resolved_model_id,
         region_name=resolved_region,
+        temperature=temperature,
+        max_tokens=max_tokens,
     )
 
     system_prompt = (
@@ -57,17 +65,22 @@ def create_agent(model_id: Optional[str] = None, region_name: Optional[str] = No
         "remember masked recipients, detect spending anomalies, and construct weekly digests."
     )
 
-    agent = Agent(
-        model=bedrock_model,
-        tools=[
+    agent_tools = tools
+    if agent_tools is None and include_tools:
+        agent_tools = [
             parse_email,
             categorize_merchant,
             handle_transfer,
             detect_anomalies,
             build_digest,
             send_digest,
-        ],
+        ]
+
+    agent = Agent(
+        model=bedrock_model,
+        tools=agent_tools,
         system_prompt=system_prompt,
+        callback_handler=None,
         name="PocketSense",
         description="Autonomous background financial agent for everyday spending intelligence",
     )

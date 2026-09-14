@@ -43,6 +43,10 @@ PocketSense operates as an **autonomous background agent**:
 
 ## How It Works (The 4-Stage Pipeline)
 
+<p align="center">
+  <img src="assets/PocketSense-Architecture.png" alt="PocketSense Architecture Diagram" width="850"/>
+</p>
+
 ```
 [Raw Bank Alerts] ──> [1. Parser] ──> [2. Categorization & Memory] ──> [3. Anomaly Engine] ──> [4. Executive Digest]
   (/mock_inbox)       (parse_email)   (categorizer / transfer_handler)   (detect_anomalies)     (build_digest & SMTP)
@@ -108,7 +112,7 @@ source .venv/bin/activate
 
 ### 2. Install Dependencies
 ```bash
-pip install strands-agents strands-agents-tools boto3 python-dotenv
+pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment Variables (`.env`)
@@ -174,9 +178,9 @@ pocketsense/
 │       ├── parser.py                 # Currency normalizer & email parser tool
 │       └── transfer_handler.py       # Transfer router & "ask once" counter logic
 │
-└── tests/                            # 17 comprehensive unit tests
+└── tests/                            # 20 comprehensive unit tests
     ├── test_anomaly_detector.py      # Tests for all 4 anomaly rules & refund netting
-    ├── test_categorizer.py           # Tests for caching & LLM query isolation
+    ├── test_categorizer.py           # Tests for caching, agent routing & fallback
     ├── test_digest.py                # Tests for HTML formatting & SMTP fallback
     ├── test_parser.py                # Tests for currency normalization edge cases
     └── test_transfer_handler.py      # Tests for masked counter thresholds & CLI helper
@@ -186,7 +190,7 @@ pocketsense/
 
 ## Testing
 
-Run the full automated test suite (17 tests, stdlib `unittest`):
+Run the full automated test suite (20 tests, stdlib `unittest`):
 ```bash
 python -m unittest discover tests
 ```

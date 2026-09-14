@@ -107,6 +107,7 @@ def run_pipeline() -> None:
             "merchant_or_recipient": target,
             "category": category,
             "is_masked": parsed.get("is_masked", False),
+            "is_refund": parsed.get("is_refund", False),
             "source_file": file_path.name,
         }
 
@@ -114,7 +115,7 @@ def run_pipeline() -> None:
         if file_path.name not in seen_sources:
             new_txns.append(record)
 
-        type_badge = "TRANSFER" if txn_type == "transfer" else "CARD    "
+        type_badge = "TRANSFER" if txn_type == "transfer" else ("REFUND  " if parsed.get("is_refund") else "CARD    ")
         masked_flag = " [MASKED]" if parsed.get("is_masked") else ""
         print(
             f"   [{idx:02d}/{len(email_files):02d}] {file_path.name:<13} | {type_badge} | "
